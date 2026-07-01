@@ -40,6 +40,7 @@ public final class SendOptions {
     private final boolean requireAck;
     private final PacketPriority priority;
     private final long ttlMillis;
+    private final boolean persistent;
     private final Map<String, String> headers;
 
     private SendOptions(Builder b) {
@@ -48,6 +49,7 @@ public final class SendOptions {
         this.requireAck = b.requireAck;
         this.priority = b.priority;
         this.ttlMillis = b.ttlMillis;
+        this.persistent = b.persistent;
         this.headers = Collections.unmodifiableMap(new LinkedHashMap<>(b.headers));
     }
 
@@ -122,6 +124,17 @@ public final class SendOptions {
     }
 
     /**
+     * Whether this packet should be queued and delivered later if the target
+     * server is currently offline (store-and-forward), instead of being dropped.
+     * The queued packet is sent as soon as the server reconnects.
+     *
+     * @return {@code true} if store-and-forward is enabled for this send
+     */
+    public boolean isPersistent() {
+        return persistent;
+    }
+
+    /**
      * Custom headers attached to this packet, readable on the receiving side via
      * {@link net.techneon.synapse.api.packet.PacketEvent#getHeaders()}.
      *
@@ -142,6 +155,7 @@ public final class SendOptions {
         private boolean requireAck = false;
         private PacketPriority priority = PacketPriority.NORMAL;
         private long ttlMillis = 0L;
+        private boolean persistent = false;
         private final Map<String, String> headers = new LinkedHashMap<>();
 
         private Builder() {
@@ -212,6 +226,18 @@ public final class SendOptions {
                 throw new IllegalArgumentException("ttl must be >= 0");
             }
             this.ttlMillis = millis;
+            return this;
+        }
+
+        /**
+         * Enables store-and-forward: if the target server is offline, the packet
+         * is queued and delivered when it reconnects, rather than being dropped.
+         *
+         * @param persistent whether to queue for offline delivery
+         * @return this builder
+         */
+        public Builder persistent(boolean persistent) {
+            this.persistent = persistent;
             return this;
         }
 

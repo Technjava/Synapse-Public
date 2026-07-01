@@ -2,11 +2,13 @@ package net.techneon.synapse.api;
 
 import net.techneon.synapse.api.event.LifecycleListener;
 import net.techneon.synapse.api.interceptor.Interceptor;
+import net.techneon.synapse.api.routing.PlayerLocation;
 import net.techneon.synapse.api.server.ServerGroup;
 import net.techneon.synapse.api.server.ServerInfo;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * The root Synapse service: the default messaging scope plus network-wide
@@ -123,4 +125,44 @@ public interface SynapseAPI extends SynapseScope {
      *         connected
      */
     Optional<Object> getUnderlyingChannel(String serverName);
+
+    // ------------------------------------------------------------------
+    // Network-wide player registry
+    // ------------------------------------------------------------------
+
+    /**
+     * Finds where a player currently is on the network.
+     *
+     * @param playerId the player's UUID
+     * @return the player's location, or {@link Optional#empty()} if not online
+     *         anywhere on the network
+     */
+    Optional<PlayerLocation> findPlayer(UUID playerId);
+
+    /**
+     * Finds a player by (case-insensitive) name.
+     *
+     * @param name the player's name
+     * @return the player's location, or {@link Optional#empty()} if not found
+     */
+    Optional<PlayerLocation> findPlayerByName(String name);
+
+    /**
+     * @param playerId the player's UUID
+     * @return whether the player is online anywhere on the network
+     */
+    default boolean isPlayerOnline(UUID playerId) {
+        return findPlayer(playerId).isPresent();
+    }
+
+    /**
+     * @return an immutable snapshot of every player known to be online across the
+     *         whole network
+     */
+    Collection<PlayerLocation> getNetworkPlayers();
+
+    /**
+     * @return the total number of players online across the whole network
+     */
+    int getNetworkPlayerCount();
 }

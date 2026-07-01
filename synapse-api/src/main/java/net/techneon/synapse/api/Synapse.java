@@ -4,17 +4,22 @@ import net.techneon.synapse.api.channel.ChannelSubscriber;
 import net.techneon.synapse.api.channel.Subscription;
 import net.techneon.synapse.api.event.LifecycleListener;
 import net.techneon.synapse.api.interceptor.Interceptor;
+import net.techneon.synapse.api.kv.SyncMap;
 import net.techneon.synapse.api.packet.Packet;
 import net.techneon.synapse.api.packet.PacketFilter;
 import net.techneon.synapse.api.packet.PacketListener;
 import net.techneon.synapse.api.packet.PacketSerializer;
+import net.techneon.synapse.api.routing.PlayerLocation;
 import net.techneon.synapse.api.send.SendOptions;
 import net.techneon.synapse.api.send.SendResult;
 import net.techneon.synapse.api.server.ServerGroup;
 import net.techneon.synapse.api.server.ServerInfo;
+import net.techneon.synapse.api.target.MultiTarget;
+import net.techneon.synapse.api.target.SingleTarget;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
@@ -212,5 +217,78 @@ public final class Synapse {
     /** @see SynapseAPI#addLifecycleListener(LifecycleListener) */
     public static void addLifecycleListener(LifecycleListener listener) {
         get().addLifecycleListener(listener);
+    }
+
+    // ------------------------------------------------------------------
+    // Auto-registration, fluent targets, distributed map (default namespace)
+    // ------------------------------------------------------------------
+
+    /** @see SynapseScope#scan(Class, String...) */
+    public static void scan(Class<?> anchor, String... packages) {
+        get().scan(anchor, packages);
+    }
+
+    /** @see SynapseScope#to(String) */
+    public static SingleTarget to(String server) {
+        return get().to(server);
+    }
+
+    /** @see SynapseScope#toPlayer(UUID) */
+    public static SingleTarget toPlayer(UUID playerId) {
+        return get().toPlayer(playerId);
+    }
+
+    /** @see SynapseScope#toGroup(String) */
+    public static MultiTarget toGroup(String group) {
+        return get().toGroup(group);
+    }
+
+    /** @see SynapseScope#toAll() */
+    public static MultiTarget toAll() {
+        return get().toAll();
+    }
+
+    /** @see SynapseScope#toAllExcept(String...) */
+    public static MultiTarget toAllExcept(String... servers) {
+        return get().toAllExcept(servers);
+    }
+
+    /** @see SynapseScope#where(Predicate) */
+    public static MultiTarget where(Predicate<ServerInfo> predicate) {
+        return get().where(predicate);
+    }
+
+    /** @see SynapseScope#map(String) */
+    public static SyncMap map(String name) {
+        return get().map(name);
+    }
+
+    // ------------------------------------------------------------------
+    // Network-wide player registry
+    // ------------------------------------------------------------------
+
+    /** @see SynapseAPI#findPlayer(UUID) */
+    public static Optional<PlayerLocation> findPlayer(UUID playerId) {
+        return get().findPlayer(playerId);
+    }
+
+    /** @see SynapseAPI#findPlayerByName(String) */
+    public static Optional<PlayerLocation> findPlayerByName(String name) {
+        return get().findPlayerByName(name);
+    }
+
+    /** @see SynapseAPI#isPlayerOnline(UUID) */
+    public static boolean isPlayerOnline(UUID playerId) {
+        return get().isPlayerOnline(playerId);
+    }
+
+    /** @see SynapseAPI#getNetworkPlayers() */
+    public static Collection<PlayerLocation> getNetworkPlayers() {
+        return get().getNetworkPlayers();
+    }
+
+    /** @see SynapseAPI#getNetworkPlayerCount() */
+    public static int getNetworkPlayerCount() {
+        return get().getNetworkPlayerCount();
     }
 }

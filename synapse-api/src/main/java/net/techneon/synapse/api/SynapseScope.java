@@ -2,6 +2,7 @@ package net.techneon.synapse.api;
 
 import net.techneon.synapse.api.channel.ChannelSubscriber;
 import net.techneon.synapse.api.channel.Subscription;
+import net.techneon.synapse.api.kv.SyncMap;
 import net.techneon.synapse.api.packet.Packet;
 import net.techneon.synapse.api.packet.PacketFilter;
 import net.techneon.synapse.api.packet.PacketListener;
@@ -9,7 +10,10 @@ import net.techneon.synapse.api.packet.PacketSerializer;
 import net.techneon.synapse.api.send.SendOptions;
 import net.techneon.synapse.api.send.SendResult;
 import net.techneon.synapse.api.server.ServerInfo;
+import net.techneon.synapse.api.target.MultiTarget;
+import net.techneon.synapse.api.target.SingleTarget;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
@@ -195,4 +199,91 @@ public interface SynapseScope {
      * @param payload the payload object (serialized with Kryo)
      */
     void publish(String channel, Object payload);
+
+    // ------------------------------------------------------------------
+    // Auto-registration
+    // ------------------------------------------------------------------
+
+    /**
+     * Scans the given package(s) and automatically registers every class
+     * annotated with {@link net.techneon.synapse.api.packet.AutoPacket} or
+     * {@link net.techneon.synapse.api.packet.AutoListener}.
+     *
+     * <p>The {@code anchor} is any class from your own plugin; it tells Synapse
+     * which class loader and jar to scan. Typically pass your main plugin class.
+     *
+     * <pre>{@code
+     * Synapse.scan(MyPlugin.class, "com.example.myplugin.packets");
+     * }</pre>
+     *
+     * @param anchor   a class from the caller's plugin (its class loader is used)
+     * @param packages one or more package names to scan (recursively)
+     */
+    void scan(Class<?> anchor, String... packages);
+
+    // ------------------------------------------------------------------
+    // Fluent send targets
+    // ------------------------------------------------------------------
+
+    /**
+     * Begins a fluent send to a single named server.
+     *
+     * @param server the destination server name
+     * @return a single-destination builder
+     */
+    SingleTarget to(String server);
+
+    /**
+     * Begins a fluent send to whichever server currently hosts the given player.
+     * Resolved at send time from the network-wide player registry.
+     *
+     * @param playerId the player's UUID
+     * @return a single-destination builder
+     */
+    SingleTarget toPlayer(UUID playerId);
+
+    /**
+     * Begins a fluent send to every connected member of a group.
+     *
+     * @param group the group name
+     * @return a multi-destination builder
+     */
+    MultiTarget toGroup(String group);
+
+    /**
+     * Begins a fluent send to every connected server.
+     *
+     * @return a multi-destination builder
+     */
+    MultiTarget toAll();
+
+    /**
+     * Begins a fluent send to every connected server except those named.
+     *
+     * @param servers the server names to exclude
+     * @return a multi-destination builder
+     */
+    MultiTarget toAllExcept(String... servers);
+
+    /**
+     * Begins a fluent send to every connected server matching a predicate.
+     *
+     * @param predicate the per-server condition
+     * @return a multi-destination builder
+     */
+    MultiTarget where(Predicate<ServerInfo> predicate);
+
+    // ------------------------------------------------------------------
+    // Distributed key-value store
+    // ------------------------------------------------------------------
+
+    /**
+     * Returns the distributed {@link SyncMap} with the given name, creating it on
+     * first use. The same map name refers to the same replicated map on every
+     * server in this namespace.
+     *
+     * @param name the map name
+     * @return the distributed map
+     */
+    SyncMap map(String name);
 }

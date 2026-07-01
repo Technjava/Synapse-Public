@@ -361,6 +361,103 @@ connection. Don't close it — Synapse owns its lifecycle.
 
 ---
 
+## Higher-level features
+
+### Fluent send targets
+
+An alternative to `send(...)` / `SendOptions`, reading closer to a sentence:
+
+```java
+Synapse.to("survival").requireAck().timeout(2000).retries(3).send(packet);
+Synapse.toGroup("eu").persistent().send(packet);
+Synapse.toAllExcept("lobby").send(packet);
+Synapse.where(s -> s.getLatencyMillis() < 50).send(packet);
+
+PongPacket pong = Synapse.to("survival").<PongPacket>request(new PingPacket()).get();
+```
+
+- `to(server)` / `toPlayer(uuid)` return a **`SingleTarget`** (`send`, `request`).
+- `toGroup` / `toAll` / `toAllExcept` / `where` return a **`MultiTarget`**
+  (`send`, `requestAll`).
+
+### Scatter-gather
+
+Ask many servers one question and collect every reply:
+
+```java
+List<CountPacket> replies = Synapse.toAll()
+    .<CountPacket>requestAll(new CountRequest())
+    .get();
+int total = replies.stream().mapToInt(CountPacket::getCount).sum();
+```
+
+Servers that don't answer within the timeout are simply omitted.
+
+### Cross-server player routing
+
+A live, network-wide registry of which server hosts each player, updated
+automatically as players join, leave, and switch servers (backend game servers are
+authoritative; proxies read it).
+
+```java
+Synapse.findPlayer(uuid).ifPresent(loc ->
+    getLogger().info(loc.getName() + " is on " + loc.getServer()));
+
+Synapse.toPlayer(uuid).send(new AlertPacket("Your auction sold!"));
+
+int online = Synapse.getNetworkPlayerCount();
+```
+
+### Distributed key-value store
+
+An eventually-consistent map replicated across every server, with change events
+and a full snapshot handed to servers as they join.
+
+```java
+SyncMap economy = Synapse.map("economy");
+economy.put(id.toString(), 500);
+int coins = economy.get(id.toString(), Integer.class).orElse(0);
+
+economy.addListener(new SyncMapListener() {
+    public void onPut(String key, Object value, String origin) { /* … */ }
+    public void onRemove(String key, String origin) { /* … */ }
+});
+```
+
+Writes use last-write-wins to resolve conflicts. Maps are scoped per namespace.
+
+### Store-and-forward
+
+Mark a send `persistent()` (or `SendOptions.builder().persistent(true)`) and, if
+the target server is offline, the packet is queued and delivered the moment it
+reconnects instead of being dropped.
+
+```java
+Synapse.to("survival").persistent().send(new MailPacket(player, message));
+```
+
+### Auto-registration
+
+Skip the manual `register(...)` calls: annotate and scan.
+
+```java
+@AutoPacket                       // optional: @AutoPacket(id = 4201)
+public class MyPacket implements Packet { }
+
+@AutoListener                     // needs a public no-arg constructor
+public class MyListener implements PacketListener { }
+
+// at start-up — pass your plugin class as the anchor:
+Synapse.scan(MyPlugin.class, "com.example.myplugin");
+```
+
+### Auto-discovery (topology gossip)
+
+You don't have to list every server in every `config.yml`. When two servers
+connect they exchange their known-server lists, so the whole network converges to
+the same topology and connects into a full mesh. Add a node to one peer and the
+rest discover it. (You still list at least one peer to bootstrap the connection.)
+
 ## Threading
 
 Handler methods, interceptors, filters, subscribers, and ack/timeout callbacks

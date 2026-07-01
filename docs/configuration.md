@@ -36,6 +36,7 @@ security:
 | `group` | string | _(none)_ | Optional logical cluster, used by `broadcastToGroup`. |
 | `bind` | string | `0.0.0.0` | Local interface to listen on. `0.0.0.0` = all interfaces. |
 | `port` | int | `25600` | TCP port Synapse listens on. Must be reachable by peers. |
+| `advertised-host` | string | _(auto)_ | The host other servers should use to reach this node, shared during auto-discovery. Leave empty to let peers use the address they observe. Set it when behind NAT or on multiple interfaces. |
 
 ## `servers` — peers to connect to
 
@@ -96,11 +97,13 @@ Subcommands:
 
 | Subcommand | Description |
 |---|---|
-| `status` | Detailed status: uptime, listen address, TLS fingerprint, and every peer's state, direction, latency, encryption, and address. |
-| `ping <server>` | Measure live round-trip time to a server. |
+| `status` | Status: uptime, listen address, TLS fingerprint, and every peer's state, direction, latency, encryption, and address. |
+| `debug` | The most detailed diagnostic dump: node, network, security, registry, runtime queues, servers (with source), distributed maps, and network players. |
+| `ping <server>` | Multi-sample round-trip test with min/avg/max and packet loss. |
 | `enroll` | Issue a single-use enrollment token (opens a short trust window). |
 | `join <token>` | Join an existing network using a token from another node. |
 | `rotate-certs` | Regenerate this server's TLS identity. |
+| `reload` | Re-read `config.yml` and reconcile the server list (add/remove peers). |
 
 Command output is colour-coded on every platform.
 

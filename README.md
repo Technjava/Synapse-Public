@@ -114,4 +114,4 @@ use the static `Synapse` facade. See **[Getting Started](docs/getting-started.md
 
 ## License
 
-Do not edit this code without authorization. All rights reserved for TechNeon - 2026.
+See repository for license details.

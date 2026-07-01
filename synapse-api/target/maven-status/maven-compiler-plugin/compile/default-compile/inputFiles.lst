@@ -8,8 +8,12 @@ C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\sy
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\exception\UnknownServerException.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\interceptor\InterceptContext.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\interceptor\Interceptor.java
+C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\kv\SyncMap.java
+C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\kv\SyncMapListener.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\Namespace.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\package-info.java
+C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\packet\AutoListener.java
+C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\packet\AutoPacket.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\packet\Packet.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\packet\PacketEvent.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\packet\PacketFilter.java
@@ -17,6 +21,7 @@ C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\sy
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\packet\PacketListener.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\packet\PacketPriority.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\packet\PacketSerializer.java
+C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\routing\PlayerLocation.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\send\AckResult.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\send\PacketAckEvent.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\send\SendOptions.java
@@ -28,3 +33,5 @@ C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\sy
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\SynapseAPI.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\SynapseProvider.java
 C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\SynapseScope.java
+C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\target\MultiTarget.java
+C:\Users\techneon\IdeaProjects\Synapse\synapse-api\src\main\java\net\techneon\synapse\api\target\SingleTarget.java
